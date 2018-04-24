@@ -60,9 +60,9 @@
         <div class="row cl">
             <label class="form-label col-xs-4 col-sm-3">角色：</label>
             <div class="formControls col-xs-8 col-sm-9">
-                <span class="select-box" style="width:150px;">
-                    <select id="select" class="select" name="roleId" size="1"></select>
-			    </span>
+                <select id="select" name="roleId" class="select-box" style="width:150px;">
+
+			    </select>
             </div>
         </div>
         <div class="row cl">
@@ -106,10 +106,12 @@
         radioCheck();
     }
 
+    var index = layer.load(3);
     $.ajax({
         url:"/user/getAllRoles",
         type: 'GET',
         success:function (data) {
+            layer.close(index);
             if(data.success==true){
                 var size=data.result.length;
                 for(var i=0;i<size;i++){
@@ -124,9 +126,8 @@
             }
         },
         error:function(XMLHttpRequest){
-            if(XMLHttpRequest.status!=200){
-                layer.alert('数据处理失败! 错误码:'+XMLHttpRequest.status,{title: '错误信息',icon: 2});
-            }
+            layer.close(index);
+            layer.alert('数据处理失败! 错误码:'+XMLHttpRequest.status,{title: '错误信息',icon: 2});
         }
     });
 
@@ -187,27 +188,24 @@
             focusCleanup:false,
             success:"valid",
             submitHandler:function(form){
-                $("#saveButton").val("保存中...");
-                $("#saveButton").attr("disabled","disabled");
+                var index = layer.load(3);
                 $(form).ajaxSubmit({
                     url: "/user/updateUser",
                     type: "POST",
                     success: function (data) {
+                        layer.close(index);
                         if (data.success == true) {
                             parent.refresh();
                             parent.msgSuccess("编辑成功!");
                             var index = parent.layer.getFrameIndex(window.name);
                             parent.layer.close(index);
                         } else {
-                            $("#saveButton").val("提交");
-                            $("#saveButton").removeAttr("disabled");
                             layer.alert(data.message, {title: '错误信息', icon: 2});
                         }
                     },
                     error: function (XMLHttpRequest) {
-                        $("#saveButton").val("提交");
-                        $("#saveButton").removeAttr("disabled");
-                        layer.alert('数据处理失败! 错误码:' + XMLHttpRequest.status + ' 错误信息:' + JSON.parse(XMLHttpRequest.responseText).message, {
+                        layer.close(index);
+                        layer.alert('数据处理失败! 错误码:' + XMLHttpRequest.status, {
                             title: '错误信息',
                             icon: 2
                         });

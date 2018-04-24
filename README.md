@@ -7,14 +7,16 @@
 ### 项目已部署，在线Demo
 - 前台商城：http://xmall.exrick.cn/
 - 后台管理系统：http://xmadmin.exrick.cn/
-- 第一次打开可能较慢，请耐心等待
 - 此项目将作为作者2018本科毕业设计，单体系统版本(一台tomcat可运行)以及详细文档后续放出
 ### 前台页面为基于Vue的独立项目 请跳转至 [xmall-front](https://github.com/Exrick/xmall-front) 项目仓库查看
 ### 开发中，敬请期待！
 - Spring Cloud版
-- APP
+    - [X-Cloud](https://github.com/Exrick/x-cloud) 框架开发中
+- 微信小程序APP 
+    - 捐赠≥19.9可加群私聊群主提前下载前台源码 [预览视频](https://v.qq.com/x/page/f0627kf4x1e.html)
 
-    ![](http://oweupqzdv.bkt.clouddn.com/QQ%E6%88%AA%E5%9B%BE20171231170920.png)
+    ![](http://oweupqzdv.bkt.clouddn.com/%E5%B0%8F%E7%A8%8B%E5%BA%8F%E9%A2%84%E8%A7%881.png)
+
 - XMall开放平台(仿微信开放平台)
 
     ![](http://oweupqzdv.bkt.clouddn.com/QQ%E6%88%AA%E5%9B%BE20171231172014.png)
@@ -25,6 +27,24 @@
 - [x] 订单系统：提供下单、查询订单、修改订单状态、定时处理订单
 - [x] 搜索系统：提供商品的搜索功能
 - [x] 单点登录系统：为多个系统之间提供用户登录凭证以及查询登录用户的信息
+
+### v1.1更新日志(需更新前后台代码及SQL)
+- [x] 接入[XPay支付系统](https://github.com/Exrick/xpay)
+- [x] 更新Dubbo(2.6.1)、ES(6.2.3)等依赖版本
+- [x] 取消ES需在页面中配置及跨域问题，ES默认配置集群名改为原elasticsearch
+- [x] 修复后台统计热卖商品SQL错误，xmall-front-web模块支持SpringMVC文件上传配置
+- [x] 修改金额字段类型优化SQL与备注
+- [x] 优化后台页面
+- [x] 修复用户修改BUG
+- [x] 优化批量删除
+- [x] 优化商品分类添加
+- [x] 重构首页，后台可配置，包括3D轮播图
+- [x] 新增缓存管理功能菜单
+- [ ] 完成订单打印发货等功能
+- [ ] 完成SKU设计
+- [ ] 增添报表
+
+...
 
 ![](http://oweupqzdv.bkt.clouddn.com/QQ%E6%88%AA%E5%9B%BE20171119130819.jpg "登录界面")
 
@@ -90,20 +110,20 @@
     - [阿里JAVA开发规约插件](https://github.com/alibaba/p3c)
 
 ### 文件说明
-- `dependency` 文件夹提供部分依赖与sql文件
+- `xmall` 文件夹提供部分依赖与sql文件
     - xmall.sql：数据库文件
     - dubbo.xsd：需手动配置避免报错
     - redis-3.0.0.gem：Redis集群搭建所需Ruby库
 - `generatorSqlmapCustom` 文件夹为 [Mybatis Generator](http://www.mybatis.org/generator/) 逆向生成工具，且已配置好maven插件
 ### 本地开发运行部署
 - 下载zip直接解压或安装git后执行克隆命令 `git clone https://github.com/Exrick/xmall.git`
-- 依赖安装：[ZooKeeper](https://github.com/Exrick/xmall/blob/master/study/Zookeeper.md)、[Redis](https://github.com/Exrick/xmall/blob/master/study/Redis.md)、[ActiveMQ](https://github.com/Exrick/xmall/blob/master/study/ActiveMQ.md)、[Elasticsearch](https://github.com/Exrick/xmall/blob/master/study/Elasticsearch.md)
-- 修改各依赖相应IP配置(默认本地127.0.0.1)，以及七牛云、极验配置在 `xmall-common - utils` 中找到修改，同步索引在`xmall-manager-web\src\main\webapp\WEB-INF\jsp\refresh-index.jsp`两处ajax中修改Elsticsearch对应IP
+- 安装各中间件并启动：[ZooKeeper](https://github.com/Exrick/xmall/blob/master/study/Zookeeper.md)、[Redis](https://github.com/Exrick/xmall/blob/master/study/Redis.md)、[ActiveMQ](https://github.com/Exrick/xmall/blob/master/study/ActiveMQ.md)、[Elasticsearch](https://github.com/Exrick/xmall/blob/master/study/Elasticsearch.md)
+- 修改各配置文件相应依赖IP配置(默认本地127.0.0.1)，以及七牛云、极验配置在 `xmall-common - utils` 中找到修改，XPay邮箱配置在 `manager-service与sso-service` 中
 - [Maven安装和在IDEA中配置](https://github.com/Exrick/xmall/blob/master/study/Maven.md)
 - 使用IDEA([破解/免费注册](http://idea.lanyus.com/)) `File-Open` 直接打开xmall项目，点击右下角 `Import Changes` 等待安装完依赖即可
-- MySQL数据库新建 `xmall` 数据库，运行sql文件，注意在 `xmall-manager-service/resources/conf/db.properties` 中修改你的数据库连接配置
+- MySQL数据库新建 `xmall` 数据库，运行sql文件，注意在有 `db.properties` 的模块中修改你的数据库连接配置
 - 按照依赖顺序分别在每个模块文件夹根目录执行 `mvn install` 命令
-- 项目需按照依赖顺序运行除 `xmall-parent` `xmall-common` 以外其它所有服务，且都已配置好Tomcat插件, 执行命令 `mvn tomcat7:run` 或在IDEA中使用插件(`View - Tool Buttons - 右侧菜单Maven Projects - tomcat7 - tomcat7:run`)运行即可，当然可自行配置
+- 项目需运行除 `xmall-parent` `xmall-common` 以外其它所有6个服务，且都已配置好Tomcat插件, 执行命令 `mvn tomcat7:run` 或在IDEA中使用插件(`View - Tool Buttons - 右侧菜单Maven Projects - tomcat7 - tomcat7:run`)运行即可，当然可自行配置
 - 后端管理系统默认端口8888 http://localhost:8888 管理员账密admin|123456
 - 前端项目接口默认端口7777 前台页面请启动基于Vue的 [xmall-front](https://github.com/Exrick/xmall-front) 项目，并修改其接口配置
 ### 技术疑问交流

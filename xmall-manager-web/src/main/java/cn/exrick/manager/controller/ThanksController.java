@@ -52,11 +52,21 @@ public class ThanksController {
         return new ResultUtil<Object>().setData(null);
     }
 
-    @RequestMapping(value = "/thanks/del/{id}",method = RequestMethod.DELETE)
+    @RequestMapping(value = "/thanks/del/{ids}",method = RequestMethod.DELETE)
     @ApiOperation(value = "删除捐赠")
-    public Result<Object> delThanks(@PathVariable int id){
+    public Result<Object> delThanks(@PathVariable int[] ids){
 
-        thanksService.deleteThanks(id);
+        for(int id:ids){
+            thanksService.deleteThanks(id);
+        }
         return new ResultUtil<Object>().setData(null);
+    }
+
+    @RequestMapping(value = "/thanks/{id}",method = RequestMethod.GET)
+    @ApiOperation(value = "通过id获取捐赠")
+    public Result<TbThanks> getThanks(@PathVariable int id){
+
+        TbThanks tbThanks=thanksService.getThankById(id);
+        return new ResultUtil<TbThanks>().setData(tbThanks);
     }
 }

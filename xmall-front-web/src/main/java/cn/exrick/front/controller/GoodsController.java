@@ -1,19 +1,23 @@
 package cn.exrick.front.controller;
 
-import cn.exrick.common.pojo.AllGoodsResult;
+import cn.exrick.manager.dto.front.AllGoodsResult;
 import cn.exrick.common.pojo.Result;
-import cn.exrick.common.pojo.SearchResult;
+import cn.exrick.manager.dto.front.SearchResult;
 import cn.exrick.common.utils.ResultUtil;
 import cn.exrick.content.service.ContentService;
 import cn.exrick.manager.dto.front.ProductDet;
-import cn.exrick.manager.dto.front.ProductHome;
-import cn.exrick.search.service.SearchItemService;
+import cn.exrick.manager.pojo.TbPanel;
 import cn.exrick.search.service.SearchService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
+/**
+ * @author Exrickx
+ */
 @RestController
 @Api(description = "商品页面展示")
 public class GoodsController {
@@ -22,15 +26,13 @@ public class GoodsController {
     private ContentService contentService;
     @Autowired
     private SearchService searchService;
-    @Autowired
-    private SearchItemService searchItemService;
 
-    @RequestMapping(value = "/goods/productHome",method = RequestMethod.GET)
-    @ApiOperation(value = "首页商品展示")
-    public Result<ProductHome> getProductHome(){
+    @RequestMapping(value = "/goods/home",method = RequestMethod.GET)
+    @ApiOperation(value = "首页内容展示")
+    public Result<List<TbPanel>> getProductHome(){
 
-        ProductHome productHome=contentService.getProductHome();
-        return new ResultUtil<ProductHome>().setData(productHome);
+        List<TbPanel> list=contentService.getHome();
+        return new ResultUtil<List<TbPanel>>().setData(list);
     }
 
     @RequestMapping(value = "/goods/productDet",method = RequestMethod.GET)
@@ -46,10 +48,11 @@ public class GoodsController {
     public Result<AllGoodsResult> getAllProduct(@RequestParam(defaultValue = "1") int page,
                                                 @RequestParam(defaultValue = "20") int size,
                                                 @RequestParam(defaultValue = "") String sort,
+                                                @RequestParam(defaultValue = "") Long cid,
                                                 @RequestParam(defaultValue = "-1") int priceGt,
                                                 @RequestParam(defaultValue = "-1") int priceLte){
 
-        AllGoodsResult allGoodsResult=contentService.getAllProduct(page,size,sort,priceGt,priceLte);
+        AllGoodsResult allGoodsResult=contentService.getAllProduct(page,size,sort,cid,priceGt,priceLte);
         return new ResultUtil<AllGoodsResult>().setData(allGoodsResult);
     }
 
@@ -66,12 +69,19 @@ public class GoodsController {
         return new ResultUtil<SearchResult>().setData(searchResult);
     }
 
-    @RequestMapping(value = "/goods/importIndex",method = RequestMethod.GET)
-    @ApiOperation(value = "导入商品索引至ES")
-    public String searchProduct(){
+    @RequestMapping(value = "/goods/recommend",method = RequestMethod.GET)
+    @ApiOperation(value = "商品推荐板块")
+    public Result<List<TbPanel>> getRecommendGoods(){
 
-        searchItemService.importAllItems();
-        return "callback({})";
+        List<TbPanel> list=contentService.getRecommendGoods();
+        return new ResultUtil<List<TbPanel>>().setData(list);
     }
 
+    @RequestMapping(value = "/goods/thank",method = RequestMethod.GET)
+    @ApiOperation(value = "我要捐赠板块")
+    public Result<List<TbPanel>> getThankGoods(){
+
+        List<TbPanel> list=contentService.getThankGoods();
+        return new ResultUtil<List<TbPanel>>().setData(list);
+    }
 }

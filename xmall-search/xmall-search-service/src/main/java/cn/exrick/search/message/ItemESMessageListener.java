@@ -4,13 +4,13 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
-import cn.exrick.common.pojo.SearchItem;
+import cn.exrick.manager.dto.front.SearchItem;
 import cn.exrick.search.mapper.ItemMapper;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +41,9 @@ public class ItemESMessageListener implements MessageListener {
 	@Value("${ES_CONNECT_IP}")
 	private String ES_CONNECT_IP;
 
+	@Value("${ES_CLUSTER_NAME}")
+	private String ES_CLUSTER_NAME;
+
 	@Override
 	public void onMessage(Message message) {
 		try {
@@ -56,11 +59,11 @@ public class ItemESMessageListener implements MessageListener {
 
 			//更新索引
 			Settings settings = Settings.builder()
-					.put("cluster.name", "xmall").build();
+					.put("cluster.name", ES_CLUSTER_NAME).build();
 			TransportClient client = new PreBuiltTransportClient(settings)
-					.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(ES_CONNECT_IP), 9300));
+					.addTransportAddress(new TransportAddress(InetAddress.getByName(ES_CONNECT_IP), 9300));
 
-			if(text[0].equals("add")){
+			if("add".equals(text[0])){
 				//根据商品id查询商品信息
 				SearchItem searchItem = itemMapper.getItemById(itemId);
 				String image=searchItem.getProductImageBig();
@@ -77,12 +80,13 @@ public class ItemESMessageListener implements MessageListener {
 								.field("productId", searchItem.getProductId())
 								.field("salePrice", searchItem.getSalePrice())
 								.field("productName", searchItem.getProductName())
-								.field("sub_title", searchItem.getSub_title())
+								.field("subTitle", searchItem.getSubTitle())
 								.field("productImageBig", searchItem.getProductImageBig())
-								.field("category_name", searchItem.getCategory_name())
+								.field("categoryName", searchItem.getCategoryName())
+								.field("cid", searchItem.getCid())
 								.endObject()
 						).get();
-			}else if(text[0].equals("delete")){
+			}else if("delete".equals(text[0])){
 				DeleteResponse deleteResponse = client.prepareDelete(ITEM_INDEX, ITEM_TYPE, String.valueOf(itemId)).get();
 			}
 

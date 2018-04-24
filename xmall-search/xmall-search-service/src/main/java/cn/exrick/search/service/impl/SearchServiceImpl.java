@@ -1,15 +1,15 @@
 package cn.exrick.search.service.impl;
 
 import cn.exrick.common.exception.XmallException;
-import cn.exrick.common.pojo.SearchItem;
-import cn.exrick.common.pojo.SearchResult;
+import cn.exrick.manager.dto.front.SearchItem;
+import cn.exrick.manager.dto.front.SearchResult;
 import cn.exrick.search.service.SearchService;
 import com.google.gson.Gson;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.search.SearchType;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.common.transport.InetSocketTransportAddress;
+import org.elasticsearch.common.transport.TransportAddress;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.SearchHit;
@@ -24,7 +24,9 @@ import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
 import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
+import static org.elasticsearch.index.query.QueryBuilders.multiMatchQuery;
 
 /**
  * @author Exrickx
@@ -35,21 +37,41 @@ public class SearchServiceImpl implements SearchService {
 	@Value("${ES_CONNECT_IP}")
 	private String ES_CONNECT_IP;
 
+	@Value("${ES_CLUSTER_NAME}")
+	private String ES_CLUSTER_NAME;
+
+	@Value("${ITEM_INDEX}")
+	private String ITEM_INDEX;
+
+	@Value("${ITEM_TYPE}")
+	private String ITEM_TYPE;
+
+	/**
+	 * 使用QueryBuilder
+	 * termQuery("key", obj) 完全匹配
+	 * termsQuery("key", obj1, obj2..)   一次匹配多个值
+	 * matchQuery("key", Obj) 单个匹配, field不支持通配符, 前缀具高级特性
+	 * multiMatchQuery("text", "field1", "field2"..);  匹配多个字段, field有通配符忒行
+	 */
 	@Override
 	public SearchResult search(String key, int page, int size,String sort,int priceGt,int priceLte) {
 
 		try{
 			Settings settings = Settings.builder()
-					.put("cluster.name", "xmall").build();
+					.put("cluster.name", ES_CLUSTER_NAME).build();
 			TransportClient client = new PreBuiltTransportClient(settings)
-					.addTransportAddress(new InetSocketTransportAddress(InetAddress.getByName(ES_CONNECT_IP), 9300));
+					.addTransportAddress(new TransportAddress(InetAddress.getByName(ES_CONNECT_IP), 9300));
 
 			SearchResult searchResult=new SearchResult();
 
 			//设置查询条件
+			//单字段搜索
 			QueryBuilder qb = matchQuery("productName",key);
+
 			//设置分页
-			if (page <=0 ) page =1;
+			if (page <=0 ){
+				page =1;
+			}
 			int start=(page - 1) * size;
 
 			//设置高亮显示
@@ -62,8 +84,8 @@ public class SearchServiceImpl implements SearchService {
 			SearchResponse searchResponse = null;
 
 			if(priceGt>=0&&priceLte>=0&&sort.isEmpty()){
-				searchResponse=client.prepareSearch("item")
-						.setTypes("itemList")
+				searchResponse=client.prepareSearch(ITEM_INDEX)
+						.setTypes(ITEM_TYPE)
 						.setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
 						.setQuery(qb)	// Query
 						.setFrom(start).setSize(size).setExplain(true)	//从第几个开始，显示size个数据
@@ -71,8 +93,8 @@ public class SearchServiceImpl implements SearchService {
 						.setPostFilter(QueryBuilders.rangeQuery("salePrice").gt(priceGt).lt(priceLte))	//过滤条件
 						.get();
 			}else if(priceGt>=0&&priceLte>=0&&sort.equals("1")){
-				searchResponse=client.prepareSearch("item")
-						.setTypes("itemList")
+				searchResponse=client.prepareSearch(ITEM_INDEX)
+						.setTypes(ITEM_TYPE)
 						.setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
 						.setQuery(qb)	// Query
 						.setFrom(start).setSize(size).setExplain(true)	//从第几个开始，显示size个数据
@@ -81,8 +103,8 @@ public class SearchServiceImpl implements SearchService {
 						.addSort("salePrice", SortOrder.ASC)
 						.get();
 			}else if(priceGt>=0&&priceLte>=0&&sort.equals("-1")){
-				searchResponse=client.prepareSearch("item")
-						.setTypes("itemList")
+				searchResponse=client.prepareSearch(ITEM_INDEX)
+						.setTypes(ITEM_TYPE)
 						.setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
 						.setQuery(qb)	// Query
 						.setFrom(start).setSize(size).setExplain(true)	//从第几个开始，显示size个数据
@@ -91,16 +113,16 @@ public class SearchServiceImpl implements SearchService {
 						.addSort("salePrice", SortOrder.DESC)
 						.get();
 			}else if((priceGt<0||priceLte<0)&&sort.isEmpty()){
-				searchResponse=client.prepareSearch("item")
-						.setTypes("itemList")
+				searchResponse=client.prepareSearch(ITEM_INDEX)
+						.setTypes(ITEM_TYPE)
 						.setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
 						.setQuery(qb)	// Query
 						.setFrom(start).setSize(size).setExplain(true)	//从第几个开始，显示size个数据
 						.highlighter(hiBuilder)		//设置高亮显示
 						.get();
 			}else if((priceGt<0||priceLte<0)&&sort.equals("1")){
-				searchResponse=client.prepareSearch("item")
-						.setTypes("itemList")
+				searchResponse=client.prepareSearch(ITEM_INDEX)
+						.setTypes(ITEM_TYPE)
 						.setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
 						.setQuery(qb)	// Query
 						.setFrom(start).setSize(size).setExplain(true)	//从第几个开始，显示size个数据
@@ -108,8 +130,8 @@ public class SearchServiceImpl implements SearchService {
 						.addSort("salePrice", SortOrder.ASC)
 						.get();
 			}else if((priceGt<0||priceLte<0)&&sort.equals("-1")){
-				searchResponse=client.prepareSearch("item")
-						.setTypes("itemList")
+				searchResponse=client.prepareSearch(ITEM_INDEX)
+						.setTypes(ITEM_TYPE)
 						.setSearchType(SearchType.DFS_QUERY_THEN_FETCH)
 						.setQuery(qb)	// Query
 						.setFrom(start).setSize(size).setExplain(true)	//从第几个开始，显示size个数据
@@ -141,6 +163,7 @@ public class SearchServiceImpl implements SearchService {
 				}
 			}
 			searchResult.setItemList(list);
+			//因个人服务器配置过低此处取消关闭减轻搜索压力增快搜索速度
 			//client.close();
 
 			return searchResult;

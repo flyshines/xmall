@@ -178,11 +178,13 @@
         focusCleanup:false,
         success:"valid",
         submitHandler:function(form){
+            var index = layer.load(3);
             editor.sync();
             $(form).ajaxSubmit({
                 url: "/item/update/"+parent.getId(),
                 type: "POST",
                 success: function(data) {
+                    layer.close(index);
                     if(data.success==true){
                         parent.refresh();
                         parent.msgSuccess("编辑成功!");
@@ -193,12 +195,14 @@
                     }
                 },
                 error:function(XMLHttpRequest) {
+                    layer.close(index);
                     layer.alert('数据处理失败! 错误码:'+XMLHttpRequest.status+' 错误信息:'+JSON.parse(XMLHttpRequest.responseText).message,{title: '错误信息',icon: 2});
                 }
             });
         }
     });
 
+    var index = layer.load(3);
     KindEditor.ready(function(K) {
         editor = K.create('textarea[name="detail"]', {
             cssPath : 'lib/kindeditor/plugins/code/prettify.css',
@@ -225,6 +229,7 @@
             url: '/item/'+parent.getId(),
             dataType: 'json',
             success: function(data){
+                layer.close(index);
                 $("#title").val(data.result.title);
                 $("#sellPoint").val(data.result.sellPoint);
                 $("#price").val(data.result.price);
@@ -236,6 +241,7 @@
                 KindEditor.html('#detail', htmlData);
             },
             error:function(XMLHttpRequest) {
+                layer.close(index);
                 layer.alert('数据处理失败! 错误码:'+XMLHttpRequest.status+' 错误信息:'+JSON.parse(XMLHttpRequest.responseText).message,{title: '错误信息',icon: 2});
             },
         });
@@ -645,7 +651,7 @@
                 } else if (state === 'confirm') {
                     stats = uploader.getStats();
                     if (stats.uploadFailNum) {
-                        text = '已成功上传' + stats.successNum + '张照片至XX相册，' +
+                        text = '已成功上传' + stats.successNum + '张照片，' +
                             stats.uploadFailNum + '张照片上传失败，<a class="retry" href="#">重新上传</a>失败图片或<a class="ignore" href="#">忽略</a>'
                     }
 
@@ -770,8 +776,10 @@
                     }else{
                         images+=","+data.result;
                     }
+                    $("#image").val(images);
+                }else{
+                    alert("上传失败:"+data.message)
                 }
-                $("#image").val(images);
             });
 
             uploader.on('all', function (type) {

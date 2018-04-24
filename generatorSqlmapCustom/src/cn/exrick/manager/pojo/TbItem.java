@@ -1,5 +1,6 @@
 package cn.exrick.manager.pojo;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 public class TbItem {
@@ -9,7 +10,7 @@ public class TbItem {
 
     private String sellPoint;
 
-    private Long price;
+    private BigDecimal price;
 
     private Integer num;
 
@@ -19,7 +20,7 @@ public class TbItem {
 
     private Long cid;
 
-    private Byte status;
+    private Integer status;
 
     private Date created;
 
@@ -49,11 +50,11 @@ public class TbItem {
         this.sellPoint = sellPoint == null ? null : sellPoint.trim();
     }
 
-    public Long getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
-    public void setPrice(Long price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 
@@ -89,11 +90,11 @@ public class TbItem {
         this.cid = cid;
     }
 
-    public Byte getStatus() {
+    public Integer getStatus() {
         return status;
     }
 
-    public void setStatus(Byte status) {
+    public void setStatus(Integer status) {
         this.status = status;
     }
 

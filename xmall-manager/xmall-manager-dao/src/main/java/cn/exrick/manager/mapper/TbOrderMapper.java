@@ -2,9 +2,8 @@ package cn.exrick.manager.mapper;
 
 import cn.exrick.manager.pojo.TbOrder;
 import cn.exrick.manager.pojo.TbOrderExample;
-import org.apache.ibatis.annotations.Param;
-
 import java.util.List;
+import org.apache.ibatis.annotations.Param;
 
 public interface TbOrderMapper {
     long countByExample(TbOrderExample example);
@@ -28,4 +27,6 @@ public interface TbOrderMapper {
     int updateByPrimaryKeySelective(TbOrder record);
 
     int updateByPrimaryKey(TbOrder record);
+
+    List<TbOrder> selectByMulti(@Param("search") String search,@Param("orderCol") String orderCol, @Param("orderDir") String orderDir);
 }

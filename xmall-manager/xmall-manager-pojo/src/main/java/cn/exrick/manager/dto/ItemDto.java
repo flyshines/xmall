@@ -1,8 +1,12 @@
 package cn.exrick.manager.dto;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
+/**
+ * @author Exrickx
+ */
 public class ItemDto implements Serializable{
 
     private Long id;
@@ -11,7 +15,7 @@ public class ItemDto implements Serializable{
 
     private String sellPoint;
 
-    private Long price;
+    private BigDecimal price;
 
     private Integer num;
 
@@ -79,11 +83,11 @@ public class ItemDto implements Serializable{
         this.sellPoint = sellPoint;
     }
 
-    public Long getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
-    public void setPrice(Long price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 

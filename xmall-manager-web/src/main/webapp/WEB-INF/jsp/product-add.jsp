@@ -40,13 +40,13 @@
         <div class="row cl">
             <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>产品标题：</label>
             <div class="formControls col-xs-8 col-sm-9">
-                <input type="text" class="input-text" value="" placeholder="" id="" name="title">
+                <input type="text" class="input-text" value="" placeholder="" name="title">
             </div>
         </div>
         <div class="row cl">
             <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>简介描述：</label>
             <div class="formControls col-xs-8 col-sm-9">
-                <input type="text" class="input-text" value="" placeholder="" id="" name="sellPoint">
+                <input type="text" class="input-text" value="" placeholder="" name="sellPoint">
             </div>
         </div>
         <div class="row cl">
@@ -60,7 +60,7 @@
         <div class="row cl">
             <label class="form-label col-xs-4 col-sm-2"><span class="c-red">*</span>产品展示价格：</label>
             <div class="formControls col-xs-8 col-sm-9">
-                <input type="text" name="price" id="" placeholder="请输入正确金额" value="" class="input-text" style="width:50%">
+                <input type="text" name="price" placeholder="请输入正确金额" value="" class="input-text" style="width:50%">
                 元</div>
         </div>
         <div class="row cl">
@@ -181,22 +181,20 @@
         focusCleanup:false,
         success:"valid",
         submitHandler:function(form){
-            $("#saveButton").html("保存中...");
-            $("#saveButton").attr("disabled","disabled");
             if(images==null){
                 layer.alert('请上传商品展示缩略图! ', {title: '错误信息',icon: 0});
-                $("#saveButton").html("保存并发布");
-                $("#saveButton").removeAttr("disabled");
                 return;
             }
+            var index = layer.load(3);
             editor.sync();
             $(form).ajaxSubmit({
                 url: "/item/add",
                 type: "POST",
                 success: function(data) {
+                    layer.close(index);
                     if(data.success==true){
                         if(parent.location.pathname!='/'){
-                            parent.product_count();
+                            parent.productCount();
                             parent.refresh();
                             parent.msgSuccess("添加成功!");
                             var index = parent.layer.getFrameIndex(window.name);
@@ -211,14 +209,11 @@
                         }
                     }else{
                         layer.alert(data.message, {title: '错误信息',icon: 2});
-                        $("#saveButton").html("保存并发布");
-                        $("#saveButton").removeAttr("disabled");
                     }
                 },
                 error:function(XMLHttpRequest) {
-                    $("#saveButton").html("保存并发布");
-                    $("#saveButton").removeAttr("disabled");
-                    layer.alert('数据处理失败! 错误码:'+XMLHttpRequest.status+' 错误信息:'+JSON.parse(XMLHttpRequest.responseText).message,{title: '错误信息',icon: 2});
+                    layer.close(index);
+                    layer.alert('数据处理失败! 错误码:'+XMLHttpRequest.status,{title: '错误信息',icon: 2});
                 }
             });
         }
@@ -660,7 +655,7 @@
                 } else if (state === 'confirm') {
                     stats = uploader.getStats();
                     if (stats.uploadFailNum) {
-                        text = '已成功上传' + stats.successNum + '张照片至XX相册，' +
+                        text = '已成功上传' + stats.successNum + '张照片，' +
                             stats.uploadFailNum + '张照片上传失败，<a class="retry" href="#">重新上传</a>失败图片或<a class="ignore" href="#">忽略</a>'
                     }
 
@@ -779,15 +774,21 @@
             };
             // 文件上传成功
             uploader.on( 'uploadSuccess', function( file,data ) {
+
                 if(data.success==true){
                     if(images==null){
                         images=data.result;
                     }else{
                         images+=","+data.result;
                     }
+                    $("#image").val(images);
+                }else{
+                    alert("上传失败:"+data.message)
                 }
-                $("#image").val(images);
+
             });
+
+
 
             uploader.on('all', function (type) {
                 var stats;

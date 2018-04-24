@@ -5,12 +5,12 @@
     <id column="id" jdbcType="BIGINT" property="id" />
     <result column="title" jdbcType="VARCHAR" property="title" />
     <result column="sell_point" jdbcType="VARCHAR" property="sellPoint" />
-    <result column="price" jdbcType="BIGINT" property="price" />
+    <result column="price" jdbcType="DECIMAL" property="price" />
     <result column="num" jdbcType="INTEGER" property="num" />
     <result column="limit_num" jdbcType="INTEGER" property="limitNum" />
     <result column="image" jdbcType="VARCHAR" property="image" />
     <result column="cid" jdbcType="BIGINT" property="cid" />
-    <result column="status" jdbcType="TINYINT" property="status" />
+    <result column="status" jdbcType="INTEGER" property="status" />
     <result column="created" jdbcType="TIMESTAMP" property="created" />
     <result column="updated" jdbcType="TIMESTAMP" property="updated" />
   </resultMap>
@@ -111,8 +111,8 @@
       image, cid, status, 
       created, updated)
     values (#{id,jdbcType=BIGINT}, #{title,jdbcType=VARCHAR}, #{sellPoint,jdbcType=VARCHAR}, 
-      #{price,jdbcType=BIGINT}, #{num,jdbcType=INTEGER}, #{limitNum,jdbcType=INTEGER}, 
-      #{image,jdbcType=VARCHAR}, #{cid,jdbcType=BIGINT}, #{status,jdbcType=TINYINT}, 
+      #{price,jdbcType=DECIMAL}, #{num,jdbcType=INTEGER}, #{limitNum,jdbcType=INTEGER}, 
+      #{image,jdbcType=VARCHAR}, #{cid,jdbcType=BIGINT}, #{status,jdbcType=INTEGER}, 
       #{created,jdbcType=TIMESTAMP}, #{updated,jdbcType=TIMESTAMP})
   </insert>
   <insert id="insertSelective" parameterType="cn.exrick.manager.pojo.TbItem">
@@ -163,7 +163,7 @@
         #{sellPoint,jdbcType=VARCHAR},
       </if>
       <if test="price != null">
-        #{price,jdbcType=BIGINT},
+        #{price,jdbcType=DECIMAL},
       </if>
       <if test="num != null">
         #{num,jdbcType=INTEGER},
@@ -178,7 +178,7 @@
         #{cid,jdbcType=BIGINT},
       </if>
       <if test="status != null">
-        #{status,jdbcType=TINYINT},
+        #{status,jdbcType=INTEGER},
       </if>
       <if test="created != null">
         #{created,jdbcType=TIMESTAMP},
@@ -207,7 +207,7 @@
         sell_point = #{record.sellPoint,jdbcType=VARCHAR},
       </if>
       <if test="record.price != null">
-        price = #{record.price,jdbcType=BIGINT},
+        price = #{record.price,jdbcType=DECIMAL},
       </if>
       <if test="record.num != null">
         num = #{record.num,jdbcType=INTEGER},
@@ -222,7 +222,7 @@
         cid = #{record.cid,jdbcType=BIGINT},
       </if>
       <if test="record.status != null">
-        status = #{record.status,jdbcType=TINYINT},
+        status = #{record.status,jdbcType=INTEGER},
       </if>
       <if test="record.created != null">
         created = #{record.created,jdbcType=TIMESTAMP},
@@ -240,12 +240,12 @@
     set id = #{record.id,jdbcType=BIGINT},
       title = #{record.title,jdbcType=VARCHAR},
       sell_point = #{record.sellPoint,jdbcType=VARCHAR},
-      price = #{record.price,jdbcType=BIGINT},
+      price = #{record.price,jdbcType=DECIMAL},
       num = #{record.num,jdbcType=INTEGER},
       limit_num = #{record.limitNum,jdbcType=INTEGER},
       image = #{record.image,jdbcType=VARCHAR},
       cid = #{record.cid,jdbcType=BIGINT},
-      status = #{record.status,jdbcType=TINYINT},
+      status = #{record.status,jdbcType=INTEGER},
       created = #{record.created,jdbcType=TIMESTAMP},
       updated = #{record.updated,jdbcType=TIMESTAMP}
     <if test="_parameter != null">
@@ -262,7 +262,7 @@
         sell_point = #{sellPoint,jdbcType=VARCHAR},
       </if>
       <if test="price != null">
-        price = #{price,jdbcType=BIGINT},
+        price = #{price,jdbcType=DECIMAL},
       </if>
       <if test="num != null">
         num = #{num,jdbcType=INTEGER},
@@ -277,7 +277,7 @@
         cid = #{cid,jdbcType=BIGINT},
       </if>
       <if test="status != null">
-        status = #{status,jdbcType=TINYINT},
+        status = #{status,jdbcType=INTEGER},
       </if>
       <if test="created != null">
         created = #{created,jdbcType=TIMESTAMP},
@@ -292,12 +292,12 @@
     update tb_item
     set title = #{title,jdbcType=VARCHAR},
       sell_point = #{sellPoint,jdbcType=VARCHAR},
-      price = #{price,jdbcType=BIGINT},
+      price = #{price,jdbcType=DECIMAL},
       num = #{num,jdbcType=INTEGER},
       limit_num = #{limitNum,jdbcType=INTEGER},
       image = #{image,jdbcType=VARCHAR},
       cid = #{cid,jdbcType=BIGINT},
-      status = #{status,jdbcType=TINYINT},
+      status = #{status,jdbcType=INTEGER},
       created = #{created,jdbcType=TIMESTAMP},
       updated = #{updated,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=BIGINT}
